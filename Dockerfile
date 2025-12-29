@@ -1,11 +1,9 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 
-# Installiamo i tool di rete e puliamo la cache per tenere l'immagine piccola
-RUN apt-get update && \
-    apt-get install -y iputils-ping && \
-    rm -rf /var/lib/apt/lists/*
+# Installa iputils e le dipendenze per requests
+RUN apk add --no-cache iputils
 
-# Installiamo la libreria requests
+# Installa requests
 RUN pip install --no-cache-dir requests
 
 WORKDIR /app
