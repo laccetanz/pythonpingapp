@@ -2,7 +2,7 @@
 FROM python:3.9-alpine
 
 # Installa l'utility ping (spesso non presente nelle immagini slim)
-RUN apk add --no-cache iputils
+# RUN apk add --no-cache iputils
 
 # Imposta la cartella di lavoro
 WORKDIR /app
