@@ -1,31 +1,45 @@
 import os
 import time
+import threading
 import requests
+from bs4 import BeautifulSoup
+from flask import Flask
 
-target_ip = "8.8.8.8"
-api_url = "https://jsonplaceholder.typicode.com/todos/1"
+app = Flask(__name__)
 
-print(f"Monitoraggio avviato. Target Ping: {target_ip} | Test API: {api_url}")
+# Variabile globale per memorizzare l'ultimo stato
+status_report = {"last_ping": "Inizializzazione...", "api_test": "Inizializzazione..."}
 
-while True:
-    # 1. TEST PING
-    response_ping = os.system(f"ping -c 1 -W 2 {target_ip} > /dev/null 2>&1")
-    if response_ping == 0:
-        ping_status = "PING OK"
-    else:
-        ping_status = "PING FAIL"
+def monitor_logic():
+    target = "8.8.8.8"
+    while True:
+        # Test Ping
+        response = os.system(f"ping -c 1 -W 2 {target} > /dev/null 2>&1")
+        status_report["last_ping"] = "ONLINE" if response == 0 else "OFFLINE"
+        
+        # Esempio BS4: prendiamo il titolo di una pagina
+        try:
+            r = requests.get("https://www.google.com")
+            soup = BeautifulSoup(r.text, 'html.parser')
+            status_report["api_test"] = f"Connesso a {soup.title.string}"
+        except Exception as e:
+            status_report["api_test"] = f"Errore: {e}"
+            
+        time.sleep(5)
 
-    # 2. TEST API (Requests)
-    try:
-        response_api = requests.get(api_url, timeout=5)
-        if response_api.status_code == 200:
-            api_status = f"OK (ID: {response_api.json().get('id')})"
-        else:
-            api_status = f"HTTP ERROR {response_api.status_code}"
-    except Exception as e:
-        api_status = f"CONNECTION ERROR: {e}"
+@app.route('/')
+def home():
+    return f"""
+    <h1>Monitoraggio Server</h1>
+    <p><b>Stato Google Ping:</b> {status_report['last_ping']}</p>
+    <p><b>Test Web (BS4):</b> {status_report['api_test']}</p>
+    <hr>
+    <p>Ultimo aggiornamento: {time.ctime()}</p>
+    <script>setTimeout(function() {{ location.reload(); }}, 5000);</script>
+    """
 
-    # Stampa i risultati
-    print(f"{time.ctime()} -> Ping: {ping_status} | API: {api_status}")
-    
-    time.sleep(5)
+if __name__ == '__main__':
+    # Avvia il monitoraggio in un thread separato
+    threading.Thread(target=monitor_logic, daemon=True).start()
+    # Avvia Flask sulla porta 5000
+    app.run(host='0.0.0.0', port=5000)
