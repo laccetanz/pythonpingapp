@@ -9,4 +9,6 @@ services:
     restart: unless-stopped
     volumes:
       # Mappa il file specifico dall'host al container
-      - /DATA/AppData/ping-app:/app
+      - /DATA/AppData/ping-app/script.py:/app/script.py
+      # Opzionale: se vuoi modificare anche i requisiti dall'host
+      - /DATA/AppData/ping-app/requirements.txt:/app/requirements.txt
