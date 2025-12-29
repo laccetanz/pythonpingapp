@@ -4,3 +4,10 @@ services:
     build: .
     container_name: python-ping-google
     restart: always
+    # Fornisce i permessi necessari per il ping
+    cap_add:
+      - NET_RAW
+    # Forza l'uso dei DNS di Google per risolvere l'host
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
