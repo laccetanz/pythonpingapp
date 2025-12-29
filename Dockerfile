@@ -1,14 +1,14 @@
-# Usa un'immagine Python leggera
-FROM python:3.9-alpine
+FROM python:3.9-slim
 
-# Installa l'utility ping (spesso non presente nelle immagini slim)
-# RUN apk add --no-cache iputils
+# Installiamo i tool di rete e puliamo la cache per tenere l'immagine piccola
+RUN apt-get update && \
+    apt-get install -y iputils-ping && \
+    rm -rf /var/lib/apt/lists/*
 
-# Imposta la cartella di lavoro
+# Installiamo la libreria requests
+RUN pip install --no-cache-dir requests
+
 WORKDIR /app
-
-# Copia lo script nella cartella
 COPY script.py .
 
-# Esegue lo script
 CMD ["python", "-u", "script.py"]
