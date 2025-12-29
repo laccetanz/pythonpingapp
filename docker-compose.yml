@@ -1,7 +1,11 @@
 version: '3.8'
 services:
   ping-service:
-    build: .
+    build:
+      context: .
+      network: host  # <--- Fondamentale: permette al Dockerfile di scaricare pacchetti
     container_name: python-ping-google
-    network_mode: "host"  # Usa la stessa rete del server/PC host
+    network_mode: "host" # Mantiene la rete host anche durante l'esecuzione
     restart: always
+    cap_add:
+      - NET_RAW
