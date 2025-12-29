@@ -4,6 +4,9 @@ services:
     build:
       context: .
       network: host  # <--- Fondamentale: permette al Dockerfile di scaricare pacchetti
-    container_name: python-ping-google
+    container_name: python-ping
     network_mode: "host" # Mantiene la rete host anche durante l'esecuzione
     restart: unless-stopped
+    volumes:
+      # Mappa il file specifico dall'host al container
+      - /DATA/AppData/ping-app:/app
