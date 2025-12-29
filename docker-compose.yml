@@ -6,6 +6,4 @@ services:
       network: host  # <--- Fondamentale: permette al Dockerfile di scaricare pacchetti
     container_name: python-ping-google
     network_mode: "host" # Mantiene la rete host anche durante l'esecuzione
-    restart: always
-    cap_add:
-      - NET_RAW
+    restart: unless-stopped
