@@ -1,12 +1,16 @@
-FROM python:3.9-alpine
+FROM python:3.9-slim
 
-# Installa iputils e le dipendenze per requests
-RUN apk add --no-cache iputils
-
-# Installa requests
-RUN pip install --no-cache-dir requests
+RUN apt-get update && \
+    apt-get install -y iputils-ping && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY script.py .
+
+# Copia il file dei requisiti e installa tutto
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia il resto (anche se useremo il volume per lo script)
+COPY . .
 
 CMD ["python", "-u", "script.py"]
